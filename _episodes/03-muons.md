@@ -3,7 +3,7 @@ title: "Muons"
 teaching: 10
 exercises: 0
 questions:
-- "How are muons and taus treated in CMS OpenData?"
+- "How are muons treated in CMS OpenData?"
 objectives:
 - "Learn member functions for muon track-based quantities"
 - "Bookmark informational web pages for different objects"
@@ -14,7 +14,7 @@ keypoints:
 - "Muons typically use pre-configured identification and isolation variable member functions."
 - "Member functions for these algorithms are documented on public TWiki pages."
 ---
-Muons have many features in common with electrons,but their own unique identification algorithms. We will study `MuonAnalyzer.cc`
+Muons have many features in common with electrons, but their own unique identification algorithms. We will study `MuonAnalyzer.cc`.
 
 
 CMS TWiki references:
@@ -29,12 +29,12 @@ Inside the code files found in `PhysObjectExtractor/src/`,  the definitions of d
 
 ## Muon identification and isolation
 To manipulate the data of the track, we have to include three additional variables. Those variables are added inside the private member function, as vector variables. Using c++ language a vector variable is a dynamic array. The primary purpose is to record several values.
-~~
+~~~
 std::vector<float> muon_dxy;
 std::vector<float> muon_dz;
 std::vector<float> muon_dxyError;
 std::vector<float> muon_dzError;
-~~
+~~~
 {: .language-cpp}
 
 The process for accesing the track includes a loop which is placed in the analyzer function `MuonAnalyzer::MuonAnalyzer`.
