@@ -1,7 +1,7 @@
 ---
 title: "Electrons"
-teaching: 15 min
-exercises: 35 min
+teaching: 15
+exercises: 35
 questions:
 - "How are electrons treated in CMS OpenData?"
 objectives:
