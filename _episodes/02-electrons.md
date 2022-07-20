@@ -1,7 +1,7 @@
 ---
 title: "Electrons"
-teaching: 0
-exercises: 0
+teaching: 15 min
+exercises: 35 min
 questions:
 - "How are electrons treated in CMS OpenData?"
 objectives:
@@ -16,8 +16,24 @@ keypoints:
 - "Member functions for these algorithms are documented on public TWiki pages."
 ---
 
-Electrons and photons are both reconstructed in the electromagnetic calorimeter in CMS, so they share many common properties and functions.
+Electrons are reconstructed in the electromagnetic calorimeter in CMS, so they share many common properties and functions.
+Electrons (and also photons) are standard tools that help us to measure better and understand the properties of known particles. For example, one way to find a Higgs Boson is by looking for signs of two photons in the debris of high energy collisions. Because electrons and photons are crucial in so many different scenarios, the physicists in the CMS Collaboration make sure to do their best to reconstruct and identify these objects.
+
 In POET we will study the `ElecronAnalyzer.cc`
+
+## ElectronAnalyzer.cc file
+
+The first thing that you will see is a set of includes. In particular we have a set of headers for electrons:
+
+~~~
+//class to extract electron information
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+~~~
+{: .language-cpp}
+
 
 ## Electron 4-vector and track information
 
@@ -56,7 +72,8 @@ electron_dzError.push_back(el.gsfTrack()->dzError());
 ~~~
 {: .language-cpp}
 
-Photons, as neutral objects, do not have a direct track link (though displaced track segments may appear from electrons or positrons produced by the photon as it transits the detector material). While the `charge()` method exists for all objects, it is not used in photon analyses. 
+>Note: in the case of Photons, since they are neutral objects, do not have a direct track link (though displaced track segments may appear from electrons or positrons produced by the photon as it transits the detector material). While the `charge()` method exists for all objects, it is not used in photon analyses. 
+{: .testimonial}
 
 ## Detector information for identification
 
@@ -71,7 +88,7 @@ decay of a longer-lived particle (typically a lot of nearby energy). These are c
 algorithms. Many types of isolation algorithms exist to deal with unique physics cases!
 
 Both types of algorithms function using **working points** that are described on a spectrum from
-"loose" to "tight". Working points that are "looser" tend to have a high efficiency for accepting
+**"loose"** to **"tight"**. Working points that are "looser" tend to have a high efficiency for accepting
 real objects, but perhaps a poor rejection rate for "fake" objects. Working points that are
 "tighter" tend to have lower efficiencies for accepting real objects, but much better rejection
 rates for "fake" objects. The choice of working point is highly analysis dependent! Some analyses
@@ -80,12 +97,27 @@ value efficiency over background rejection, and some analyses are the opposite.
 The "standard" identification and isolation algorithm results can be accessed from the physics
 object classes.
 
+## Multivariate Electron Identification
+
+In the MVA approach, one forms a single discriminator variable that is computed based on multiple parameters of the electron object and provides the best separation between the signal and backgrounds. One can then cut on discriminator value or use the distribution of the values for a shape based statistical analysis.
+
+There are two basic types of MVAs that are usually provided by EGM:
+
+ * **the triggering MVA**: the discriminator is trained on the electrons that pass typical electron trigger requirements
+ * **the non-triggering MVA**: the discriminator is trained on all electrons regardless of the trigger
+ 
+For our purposes, we will use the non-triggering MVA. Note the tags that are used `...wp90` and `...wp80`. As mentioned above, the difference lies on the working point (`wp`).
+~~~
+      electron_ismvaLoose.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp90"));
+      electron_ismvaTight.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp80"));
+~~~
+{: .language-cpp}
+
  * Electrons: [Multivariate Electron Identification for Run2
 ](https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentificationRun2Archive#Non_triggering_electron_MVA_deta)
 
->Note: current POET implementations of identification working points are appropriate for 2015 data analysis.
-{: .testimonial}
 
+## Cut Based Electron ID
 
 Most `pat::<object>` classes contain member functions that return detector-related information. In the
 case of electrons, we see this information used as identification criteria:
@@ -99,20 +131,19 @@ case of electrons, we see this information used as identification criteria:
 {: .language-cpp}
 
 Let's break down these criteria:
- * `cutBasedElectronID...veto` indicate how the electron's trajectory varies between the track and the ECAL cluster,
-with smaller variations preferred for the "tightest" quality levels.
+ * `cutBasedElectronID...veto` is a tag that rejects electrons coming from photon conversions in the tracker, which should instead be reconstructed as part of the photon.
  * The impact parameters `dxy` and `dz` should also be small for good quality electrons produced in the initial collision.
- * Missing hits are gaps in the trajectory through the inner tracker (shouldn't be any!)
 
 **Isolation** is computed in similar ways for all physics objects: search for particles in a cone around the object of interest and sum up their energies, subtracting off the energy deposited by pileup particles. This sum divided by the object of interest's transverse momentum is called **relative isolation** and is the most common way to determine whether an object was produced "promptly" in or following the proton-proton collision (ex: electrons from a Z boson decay, or photons from a Higgs boson decay). Relative isolation values will tend to be large for particles that emerged from weak decays of hadrons within jets, or other similar "nonprompt" processes. For electrons, isolation is computed as:
 
 ~~~
 ...
-electron_veto.push_back(el.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-veto"));
+electron_iso.push_back(el.ecalPFClusterIso());
 ...
 ~~~
 {: .language-cpp}
 
-* The conversion veto is an algorithm that rejects electrons coming from photon conversions in the tracker, which should instead be reconstructed as part of the photon.
+>Note: current POET implementations of identification working points are appropriate for 2015 data analysis.
+{: .testimonial}
 
 {% include links.md %}
