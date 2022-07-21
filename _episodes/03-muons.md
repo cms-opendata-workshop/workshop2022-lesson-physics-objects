@@ -1,7 +1,7 @@
 ---
 title: "Muons"
 teaching: 20
-exercises: 0
+exercises: 20
 questions:
 - "How are muons treated in CMS OpenData?"
 objectives:
@@ -116,19 +116,19 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 >## Hands-on: adding muon IDs 
 >
 >Using the documentation on the TWiki page and the `MuonAnalyzer.cc`:
-> * 1. Write the expression that get the access to the Loose, Medium, Tight, Soft and HightPt muons.
-> * 2. Using c++ language, write the expression of the vector variable declaration to implement as if we would like to record the dxz error. 
-> * 3. What is implemented to get the 3D impact parameter?
-> * 4. In the muon isolation code, we have this line:
+> * Write the expression that get the access to the Loose, Medium, Tight, Soft and HightPt muons.
+> * Using c++ language, write the expression of the vector variable declaration to implement as if we would like to record the dxz error. 
+> * What is implemented to get the 3D impact parameter?
+> * In the muon isolation code, we have this line:
 >~~~
->muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
+> muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
 >~~~
 >{: .language-cpp}
-> What do you think is doing?
-> * 5. Add the pass/fail information about the HighPt Tracker Muon identification working point.
+> what do you think is doing?
+> * Add the pass/fail information about the HighPt Tracker Muon identification working point.
 >
 >> ## Solution:
->> 1. We need to look into the declaration of the variables mentioned:
+>> We need to look into the declaration of the variables mentioned:
 >>~~~
 >> std::vector<int> muon_isLoose;
 >> std::vector<int> muon_isMedium;
@@ -137,12 +137,12 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 >> std::vector<int> muon_isHighPt;
 >>~~~
 >>{: .language-cpp}
->> 2. If we would like to implement the record of the dxz error, we would need to declare:
+>> If we would like to implement the record of the dxz error, we would need to declare:
 >>~~~
 >> std::vector<float> muon_dxz;
 >>~~~
 >>{: .language-cpp}
->> 3. First, we need to look into the declaration of the parameter:
+>> First, we need to look into the declaration of the parameter:
 >>~~~
 >> std::vector<float> muon_ip3d;
 >> std::vector<float> muon_sip3d;
@@ -155,37 +155,37 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 >> mtree->Branch("muon_sip3d",&muon_sip3d);
 >> mtree->GetBranch("muon_sip3d")->SetTitle("muon significance on impact parameter in 3d");
 >>~~~
->>>>{: .language-cpp}
+>>{: .language-cpp}
 >> vector clearing:
 >>~~~
 >> muon_ip3d.clear();
 >> muon_sip3d.clear();
 >>~~~
->>>>{: .language-cpp}
+>>{: .language-cpp}
 >> and finally, vector filling: 
 >>~~~
 >> muon_ip3d.push_back(ip3dpv.second.value());
 >> muon_sip3d.push_back(ip3dpv.second.significance());
 >>~~~
 >>>>{: .language-cpp}
->> 4. 
->> 5. As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
+>>  
+>> As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
 >> You might add Hight Pt Tracker ID beneath the existing Soft and HightPt IDs in each section:
 >>~~~
->>std::vector<float> muon_isHighPtTracker;
+>> std::vector<float> muon_isHighPtTracker;
 >>~~~
 >>{: .language-cpp}
 >>~~~
->>mtree->Branch("muon_isHighPtTracker",&muon_isHighPtTracker);
->>mtree->GetBranch("muon_isHighPtTracker")->SetTitle("muon tagged high pt tracker");
+>> mtree->Branch("muon_isHighPtTracker",&muon_isHighPtTracker);
+>> mtree->GetBranch("muon_isHighPtTracker")->SetTitle("muon tagged high pt tracker");
 >>~~~
 >>{: .language-cpp}
 >>~~~
->>muon_isHighPtTracker.clear();
+>> muon_isHighPtTracker.clear();
 >>~~~
 >>{: .language-cpp}
 >>~~~
->>muon_isHighPtTracker.push_back(mu.isHighPtTrackerMuon(PV));
+>> muon_isHighPtTracker.push_back(mu.isHighPtTrackerMuon(PV));
 >>~~~
 >>{: .language-cpp}
 >{: .solution}
