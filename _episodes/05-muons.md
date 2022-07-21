@@ -1,7 +1,7 @@
 ---
 title: "Muons"
 teaching: 20
-exercises: 0
+exercises: 20
 questions:
 - "How are muons treated in CMS OpenData?"
 objectives:
@@ -44,7 +44,7 @@ MuonAnalyzer::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 ~~~
 {: .language-cpp}
 
-The result of the getByToken command is a variable called “muons” which is a collection of all the muon objects. Collection classes are generally constructed as std::vectors. We can quickly create a loop to access individual muons:
+The result of the getToken method is an object called “muons” which is a collection of all the muon objects. Collection classes are generally constructed as vectors. We can quickly create a loop to access individual muons:
 ~~~
 for (const pat::Muon &mu : *muons){
   {
@@ -84,7 +84,7 @@ for (const pat::Muon &mu : *muons)
 }
 ~~~
 {: .language-cpp}
-For initializing the variables, it has to be a declared at the beginning of the analyzer function as the following:
+For initializing the variables, it has to be declared at the beginning of the analyzer function as the following:
 ~~~
 muon_dxy.clear();
 muon_dz.clear();
@@ -112,5 +112,83 @@ auto iso04 = mu.pfIsolationR04();
 muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
 ~~~
 {: .language-cpp}
+
+>## Hands-on: adding muon IDs 
+>
+>Using the documentation on the TWiki page and the `MuonAnalyzer.cc`:
+> * Write the expression that get the access to the Loose, Medium, Tight, Soft and HightPt muons.
+> * Using c++ language, write the expression of the vector variable declaration to implement as if we would like to record the dxz error. 
+> * What is implemented to get the 3D impact parameter?
+> * In the muon isolation code, we have this line:
+>~~~
+> muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
+>~~~
+>{: .language-cpp}
+> what do you think is doing?
+> * Add the pass/fail information about the HighPt Tracker Muon identification working point.
+>
+>> ## Solution:
+>> We need to look into the loop that access individual muons:
+>>~~~
+>> muon_isLoose.push_back(mu.isLooseMuon());
+>> muon_isMedium.push_back(mu.isMediumMuon());
+>> muon_isTight.push_back(mu.isTightMuon(PV));
+>> muon_isSoft.push_back(mu.isSoftMuon(PV));
+>> muon_isHighPt.push_back(mu.isHighPtMuon(PV));
+>>~~~
+>>{: .language-cpp}
+>> If we would like to implement the record of the dxz error, we would need to declare:
+>>~~~
+>> std::vector<float> muon_dxz;
+>>~~~
+>>{: .language-cpp}
+>> Upon the 3D impact parameter, we need to first look into the declaration of the parameter:
+>>~~~
+>> std::vector<float> muon_ip3d;
+>> std::vector<float> muon_sip3d;
+>>~~~
+>>{: .language-cpp}
+>> the branches:
+>>~~~
+>> mtree->Branch("muon_ip3d",&muon_ip3d);
+>> mtree->GetBranch("muon_ip3d")->SetTitle("muon impact parameter in 3d");
+>> mtree->Branch("muon_sip3d",&muon_sip3d);
+>> mtree->GetBranch("muon_sip3d")->SetTitle("muon significance on impact parameter in 3d");
+>>~~~
+>>{: .language-cpp}
+>> vector clearing:
+>>~~~
+>> muon_ip3d.clear();
+>> muon_sip3d.clear();
+>>~~~
+>>{: .language-cpp}
+>> and finally, vector filling: 
+>>~~~
+>> muon_ip3d.push_back(ip3dpv.second.value());
+>> muon_sip3d.push_back(ip3dpv.second.significance());
+>>~~~
+>>>>{: .language-cpp}
+>>  
+>> As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
+>> You might add Hight Pt Tracker ID beneath the existing Soft and HightPt IDs in each section:
+>>~~~
+>> std::vector<float> muon_isHighPtTracker;
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> mtree->Branch("muon_isHighPtTracker",&muon_isHighPtTracker);
+>> mtree->GetBranch("muon_isHighPtTracker")->SetTitle("muon tagged high pt tracker");
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> muon_isHighPtTracker.clear();
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> muon_isHighPtTracker.push_back(mu.isHighPtTrackerMuon(PV));
+>>~~~
+>>{: .language-cpp}
+>{: .solution}
+{: .challenge}
 
 {% include links.md %}
