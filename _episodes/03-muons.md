@@ -128,13 +128,13 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 > * Add the pass/fail information about the HighPt Tracker Muon identification working point.
 >
 >> ## Solution:
->> We need to look into the declaration of the variables mentioned:
+>> We need to look into the loop that access individual muons:
 >>~~~
->> std::vector<int> muon_isLoose;
->> std::vector<int> muon_isMedium;
->> std::vector<int> muon_isTight;
->> std::vector<int> muon_isSoft;
->> std::vector<int> muon_isHighPt;
+>> muon_isLoose.push_back(mu.isLooseMuon());
+>> muon_isMedium.push_back(mu.isMediumMuon());
+>> muon_isTight.push_back(mu.isTightMuon(PV));
+>> muon_isSoft.push_back(mu.isSoftMuon(PV));
+>> muon_isHighPt.push_back(mu.isHighPtMuon(PV));
 >>~~~
 >>{: .language-cpp}
 >> If we would like to implement the record of the dxz error, we would need to declare:
@@ -142,7 +142,7 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 >> std::vector<float> muon_dxz;
 >>~~~
 >>{: .language-cpp}
->> First, we need to look into the declaration of the parameter:
+>> Upon the 3D impact parameter, we need to first look into the declaration of the parameter:
 >>~~~
 >> std::vector<float> muon_ip3d;
 >> std::vector<float> muon_sip3d;
