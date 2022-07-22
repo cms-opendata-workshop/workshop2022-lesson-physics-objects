@@ -113,6 +113,8 @@ For our purposes, we will use the non-triggering MVA. Note the tags that are use
 ~~~
 {: .language-cpp}
 
+The MVA training provides working points with decreased electron fake rate.
+
  * Electrons: [Multivariate Electron Identification for Run2
 ](https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentificationRun2Archive#Non_triggering_electron_MVA_deta)
 
@@ -132,7 +134,12 @@ case of electrons, we see this information used as identification criteria:
 
 Let's break down these criteria:
  * `cutBasedElectronID...veto` is a tag that rejects electrons coming from photon conversions in the tracker, which should instead be reconstructed as part of the photon.
- * The impact parameters `dxy` and `dz` should also be small for good quality electrons produced in the initial collision.
+
+Four standard working points are provided
+ * Veto (average efficiency ~95%). Use this working point for third lepton veto or counting.
+ * Loose (average efficiency ~90%). Use this working point when backgrounds are rather low.
+ * Medium (average efficiency ~80%). This is a good starting point for generic measurements involving W or Z bosons.
+ * Tight (average efficiency ~70%). Use this working point for measurements where backgrounds are a serious problem.
 
 **Isolation** is computed in similar ways for all physics objects: search for particles in a cone around the object of interest and sum up their energies, subtracting off the energy deposited by pileup particles. This sum divided by the object of interest's transverse momentum is called **relative isolation** and is the most common way to determine whether an object was produced "promptly" in or following the proton-proton collision (ex: electrons from a Z boson decay, or photons from a Higgs boson decay). Relative isolation values will tend to be large for particles that emerged from weak decays of hadrons within jets, or other similar "nonprompt" processes. For electrons, isolation is computed as:
 
@@ -145,5 +152,90 @@ electron_iso.push_back(el.ecalPFClusterIso());
 
 >Note: current POET implementations of identification working points are appropriate for 2015 data analysis.
 {: .testimonial}
+
+>## Hands-on: Adding ip3d for electrons
+>
+>Using the documentation on this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) and the `ElectronAnalyzer.cc`:
+> * First, you can see the structure in each header (e.g. "DataFormats/PatCandidates/interface/Electron.h"). Then, in this repository you will see the same path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder.
+> * You can check out all the headers and see the available methods for each of them. For example, **Electron.h** has the **gsfTrack()** method.
+> Now, the first step is to add a **std vector** for ip3d variable.
+>~~~
+> muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
+>~~~
+>{: .language-cpp}
+> You will need to add the mtree variable in the constructor. What do you think these lines of code are doing?
+> Next, in the ElectronAnalyzer::analyze. You will need to ad the clear() method for the std vetor variable that you have just created.
+> Here comes the challenge!!
+> Hint: You will need to add the following headers:
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+
+>> ## Solution:
+>> The std vector variables are the following:
+>>~~~
+>> std::vector<double> electron_ip3d;	
+>> std::vector<double> electron_sip3d;
+>>~~~
+>>{: .language-cpp}
+>> The mtree variables could look like these:
+>>~~~
+>> mtree->Branch("electron_ip3d",&electron_ip3d);
+>> mtree->GetBranch("electron_ip3d")->SetTitle("electron impact parameter in 3d");
+>> mtree->Branch("electron_sip3d",&electron_sip3d);
+>> mtree->GetBranch("electron_sip3d")->SetTitle("electron significance on impact parameter in 3d");
+>>~~~
+>>{: .language-cpp}
+>> Note that mtree 
+>> Upon the 3D impact parameter, we need to first look into the declaration of the parameter:
+>>~~~
+>> std::vector<float> muon_ip3d;
+>> std::vector<float> muon_sip3d;
+>>~~~
+>>{: .language-cpp}
+>> the branches:
+>>~~~
+>> mtree->Branch("muon_ip3d",&muon_ip3d);
+>> mtree->GetBranch("muon_ip3d")->SetTitle("muon impact parameter in 3d");
+>> mtree->Branch("muon_sip3d",&muon_sip3d);
+>> mtree->GetBranch("muon_sip3d")->SetTitle("muon significance on impact parameter in 3d");
+>>~~~
+>>{: .language-cpp}
+>> vector clearing:
+>>~~~
+>> muon_ip3d.clear();
+>> muon_sip3d.clear();
+>>~~~
+>>{: .language-cpp}
+>> and finally, vector filling: 
+>>~~~
+>> muon_ip3d.push_back(ip3dpv.second.value());
+>> muon_sip3d.push_back(ip3dpv.second.significance());
+>>~~~
+>>>>{: .language-cpp}
+>>  
+>> As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
+>> You might add Hight Pt Tracker ID beneath the existing Soft and HightPt IDs in each section:
+>>~~~
+>> std::vector<float> muon_isHighPtTracker;
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> mtree->Branch("muon_isHighPtTracker",&muon_isHighPtTracker);
+>> mtree->GetBranch("muon_isHighPtTracker")->SetTitle("muon tagged high pt tracker");
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> muon_isHighPtTracker.clear();
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>> muon_isHighPtTracker.push_back(mu.isHighPtTrackerMuon(PV));
+>>~~~
+>>{: .language-cpp}
+>{: .solution}
+{: .challenge}
+
 
 {% include links.md %}
