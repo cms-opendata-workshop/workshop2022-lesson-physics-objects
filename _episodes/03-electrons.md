@@ -156,19 +156,19 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >## Hands-on: Adding ip3d for electrons (impact parameter in 3D)
 >
 > Using the documentation on this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) and the `ElectronAnalyzer.cc`:
-> * First, you can see the structure in each header (e.g. "DataFormats/PatCandidates/interface/Electron.h"). Then, in this repository you will see the same path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder. You will need this repository to check out the methods that you will need to implement for ip3d.
-> * You can check out all the headers and see the available methods for each of them. For example, **Electron.h** has the **gsfTrack()** method.
+> * First, you can see the structure in each header (e.g. `DataFormats/PatCandidates/interface/Electron.h`). Then, in this repository you will see the slightly different path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder in the repository. You will need this to check out the methods that you should implement for ip3d.
+> * You can check out all the headers and see the available methods for each of them. For example, **Electron.h** has the `gsfTrack()` method.
 >
-> Now, the first step is to add a **std vector** for ip3d variable. Here is an example:
+> Now, the first step is to add a `std::vector` for ip3d variable. Here is an example:
 >~~~
 > std::vector<int> electron_ismvaTight;
 >~~~
 >{: .language-cpp}
-> This variable must be <double>
+> This variable must be `<double>`
 >
 > You will need to add the mtree variable in the constructor. What do you think these lines of code are doing?
 >
-> Next, in the ElectronAnalyzer::analyze. You will need to ad the clear() method for the std vetor variable that you have just created.
+> Next, in the `ElectronAnalyzer::analyze`. You will need to ad the `clear()` method for the std vetor variable that you have just created.
 >
 > Here comes the challenge!!
 >
