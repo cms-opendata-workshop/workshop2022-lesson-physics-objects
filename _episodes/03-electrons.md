@@ -153,27 +153,39 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >Note: current POET implementations of identification working points are appropriate for 2015 data analysis.
 {: .testimonial}
 
->## Hands-on: Adding ip3d for electrons
+>## Hands-on: Adding ip3d for electrons (impact parameter in 3D)
 >
->Using the documentation on this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) and the `ElectronAnalyzer.cc`:
-> * First, you can see the structure in each header (e.g. "DataFormats/PatCandidates/interface/Electron.h"). Then, in this repository you will see the same path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder.
+> Using the documentation on this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) and the `ElectronAnalyzer.cc`:
+> * First, you can see the structure in each header (e.g. "DataFormats/PatCandidates/interface/Electron.h"). Then, in this repository you will see the same path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder. You will need this repository to check out the methods that you will need to implement for ip3d.
 > * You can check out all the headers and see the available methods for each of them. For example, **Electron.h** has the **gsfTrack()** method.
-> Now, the first step is to add a **std vector** for ip3d variable.
+>
+> Now, the first step is to add a **std vector** for ip3d variable. Here is an example:
 >~~~
-> muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/mu.pt());
+> std::vector<int> electron_ismvaTight;
 >~~~
 >{: .language-cpp}
+> This variable must be <double>
+>
 > You will need to add the mtree variable in the constructor. What do you think these lines of code are doing?
+>
 > Next, in the ElectronAnalyzer::analyze. You will need to ad the clear() method for the std vetor variable that you have just created.
+>
 > Here comes the challenge!!
+>
 > Hint: You will need to add the following headers:
+>~~~
 > #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 > #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 > #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 > #include "TrackingTools/IPTools/interface/IPTools.h"
+>~~~
+>{: .language-cpp}
+> Also, you can check this [code](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L576).
 >
 >> ## Solution:
->> The std vector variables are the following:
+>> We will add two variables. Let's see:
+>>
+>> The required std vector variables are the following:
 >>~~~
 >> std::vector<double> electron_ip3d;	
 >> std::vector<double> electron_sip3d;
@@ -204,7 +216,7 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >> electron_ip3d.push_back(ip3dpv.second.value());
 >> electron_sip3d.push_back(ip3dpv.second.significance());
 >>~~~
->>>>{: .language-cpp}
+>>{: .language-cpp}
 >{: .solution}
 {: .challenge}
 
