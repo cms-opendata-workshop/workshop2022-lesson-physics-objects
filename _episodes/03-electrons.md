@@ -167,11 +167,11 @@ electron_iso.push_back(el.ecalPFClusterIso());
 > Next, in the ElectronAnalyzer::analyze. You will need to ad the clear() method for the std vetor variable that you have just created.
 > Here comes the challenge!!
 > Hint: You will need to add the following headers:
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-#include "TrackingTools/Records/interface/TransientTrackRecord.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
-#include "TrackingTools/IPTools/interface/IPTools.h"
-
+> #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+> #include "TrackingTools/Records/interface/TransientTrackRecord.h"
+> #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+> #include "TrackingTools/IPTools/interface/IPTools.h"
+>
 >> ## Solution:
 >> The std vector variables are the following:
 >>~~~
@@ -187,53 +187,24 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >> mtree->GetBranch("electron_sip3d")->SetTitle("electron significance on impact parameter in 3d");
 >>~~~
 >>{: .language-cpp}
->> Note that mtree 
->> Upon the 3D impact parameter, we need to first look into the declaration of the parameter:
->>~~~
->> std::vector<float> muon_ip3d;
->> std::vector<float> muon_sip3d;
->>~~~
->>{: .language-cpp}
->> the branches:
->>~~~
->> mtree->Branch("muon_ip3d",&muon_ip3d);
->> mtree->GetBranch("muon_ip3d")->SetTitle("muon impact parameter in 3d");
->> mtree->Branch("muon_sip3d",&muon_sip3d);
->> mtree->GetBranch("muon_sip3d")->SetTitle("muon significance on impact parameter in 3d");
->>~~~
->>{: .language-cpp}
+>> Note that mtree stores the information in each variable. FIX ME
+>>
 >> vector clearing:
 >>~~~
->> muon_ip3d.clear();
->> muon_sip3d.clear();
+>> electron_ip3d.clear();
+>> electron_sip3d.clear();
 >>~~~
 >>{: .language-cpp}
->> and finally, vector filling: 
+>> and finally: 
 >>~~~
->> muon_ip3d.push_back(ip3dpv.second.value());
->> muon_sip3d.push_back(ip3dpv.second.significance());
+>> edm::ESHandle<TransientTrackBuilder> trackBuilder;
+>> iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
+>> reco::TransientTrack tt = trackBuilder->build(el.gsfTrack());
+>> std::pair<bool,Measurement1D> ip3dpv = IPTools::absoluteImpactParameter3D(tt, primaryVertex);
+>> electron_ip3d.push_back(ip3dpv.second.value());
+>> electron_sip3d.push_back(ip3dpv.second.significance());
 >>~~~
 >>>>{: .language-cpp}
->>  
->> As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
->> You might add Hight Pt Tracker ID beneath the existing Soft and HightPt IDs in each section:
->>~~~
->> std::vector<float> muon_isHighPtTracker;
->>~~~
->>{: .language-cpp}
->>~~~
->> mtree->Branch("muon_isHighPtTracker",&muon_isHighPtTracker);
->> mtree->GetBranch("muon_isHighPtTracker")->SetTitle("muon tagged high pt tracker");
->>~~~
->>{: .language-cpp}
->>~~~
->> muon_isHighPtTracker.clear();
->>~~~
->>{: .language-cpp}
->>~~~
->> muon_isHighPtTracker.push_back(mu.isHighPtTrackerMuon(PV));
->>~~~
->>{: .language-cpp}
 >{: .solution}
 {: .challenge}
 
