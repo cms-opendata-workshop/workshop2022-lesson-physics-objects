@@ -168,8 +168,8 @@ muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronE
 >> muon_sip3d.push_back(ip3dpv.second.significance());
 >>~~~
 >>>>{: .language-cpp}
->>  
->> As we did in the exercises shown above, to add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
+>> The line in the insolation code is doing the sum of 3 different transversal momentum (pt): the pt of an charged hadron, a neutral hadron and the pt of a photon. This sum is compared with the transversal momentum of the muon. This helps us determine how spread out the muon is, and from which particle it has decayed.
+>> To add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
 >> You might add Hight Pt Tracker ID beneath the existing Soft and HightPt IDs in each section:
 >>~~~
 >> std::vector<float> muon_isHighPtTracker;
