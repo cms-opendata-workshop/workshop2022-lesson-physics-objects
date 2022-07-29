@@ -116,12 +116,11 @@ on whether or not this `pat::Jet` had a matched generated jet. The random smeari
 ~~~
 for (const pat::Jet &jet : *jets){
 
-    ...
 
     ptscale = 1;
     if(!isData) {
 
-        JME::JetParameters JERparameters = {{JME::Binning::JetPt, corrpt}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, *(rhoHandle.product())}};
+        JME::JetParameters JERparameters = { {JME::Binning::JetPt, corrpt}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, *(rhoHandle.product())} };
     	float res = resolution.getResolution(JERparameters); 
     	float sf = resolution_sf.getScaleFactor(JERparameters);
     	float sf_up = resolution_sf.getScaleFactor(JERparameters, Variation::UP);
@@ -149,7 +148,6 @@ for (const pat::Jet &jet : *jets){
      pat::Jet smearedjet = jet;
      smearedjet.scaleEnergy(ptscale);
 
-     ....
 }
 ~~~
 {: .language-cpp}
