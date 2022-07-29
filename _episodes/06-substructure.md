@@ -28,8 +28,8 @@ keypoints:
 
 Jets can originate from many different types of particles. The figure below gives an example of how different "parent particles" can influence the internal structure of a jet. Observables related to the **mass** and **internal structure** of a jet can help us design algorithms to distinguish between sources. The most common type of algorithm identifies **b quark jets** from light quark or gluon jets. The POET contains all the tools you need to evaluate the default CMS b tagging discriminants on small-radius jets. See the next episode for more information. In this lesson we will focus on tools to identify hadronic decays of Lorentz-boosed massive SM particles within large-radius jets.
 
-<img src="Jettypes.PNG" alt="" />
-![](../assets/img/Jettypes.PNG)
+<img src="JetTypes.PNG" alt="" />
+![](../assets/img/JetTypes.PNG)
 
 
 ## Jet mass and grooming
