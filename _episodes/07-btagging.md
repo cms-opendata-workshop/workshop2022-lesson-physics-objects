@@ -81,7 +81,7 @@ efficiency to reduce mis-tagging. The CSVv2 algorithm has working points defined
 
 The figure below shows the relationship between b jet efficiency and misidentification rate in several b tagging algorithms, including CSVv2 ([read more](https://cds.cern.ch/record/2138504/)).
 
-<img src="https://cds.cern.ch/record/2138504/files/Figure_008.pdf" alt="b efficiency" width="600"/> 
+![](../assets/img/BtagROC.PNG)
 
 ## Applying scale factors
 
