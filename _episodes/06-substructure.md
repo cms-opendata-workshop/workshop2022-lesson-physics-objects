@@ -14,15 +14,23 @@ keypoints:
 ---
 
 > ## Run POET
->Take some time to run POET using the entire top quark pair test file. In `python/poet_cfg.py` set the
->number of events to process to -1:
->~~~
->#---- Select the maximum number of events to process (if -1, run over all events)
->process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
->~~~
->{: .language-python}
+> If you have not already, run POET using the entire top quark pair test file. In `python/poet_cfg.py` set the
+> number of events to process to -1:
+> ~~~
+> #---- Select the maximum number of events to process (if -1, run over all events)
+> process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+> ~~~
+> {: .language-python}
+> ~~~
+> #---- Define the test source files to be read using the xrootd protocol (root://), or local files (file:)
+> process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
+>         'root://eospublic.cern.ch//eos/opendata/cms/mc/RunIIFall15MiniAODv2/TT_Mtt-1000toInf_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-> v1/80000/000D040B-4ED6-E511-91B6-002481CFC92C.root',
+>         )
+> )
+> ~~~
+> {: .language-python}
 >
->And run POET using `cmsRun python/poet_cfg.py`.
+> And run POET using `cmsRun python/poet_cfg.py`.
 {: .prereq}
 
 
@@ -56,6 +64,27 @@ fatjet_prunedmass.push_back(corrL2L3*(double)smearedFatjet.userFloat("ak8PFJetsC
 fatjet_softdropmass.push_back(corrL2L3*(double)smearedFatjet.userFloat("ak8PFJetsCHSSoftDropMass"));
 ~~~
 {: .language-cpp}
+
+> ## Exercise: boosted particle momentum ranges
+> Study the connection between jet mass and jet momentum -- what minimum transverse momentum is
+> required for W boson and top quark jets to be found within a large-radius jet?
+>
+> Begin by opening the `myoutput.root` file you processed at the beginning of this segment.
+> Use ROOT's capability to draw two-dimensional histograms to compare various jet masses against
+> the jet's transverse momentum:
+> ~~~
+> $ root -l myoutput.root
+> [1] _file0->cd("myfatjets");
+> [2] Events->Draw("fatjet_<SOME MASS VARIABLE>:fatjet_corrpt","","colz"); // colz makes a heatmap
+> ~~~
+> {: .language-cpp}
+>
+>> ## Solution
+>> ![](../assets/img/MassVsPt.PNG)
+>> This plot shows the relationship between momentum, mass, and jet radius. As the momentum increases, jets of larger mass become contained within
+>> the fat jet. While W bosons can be observed from 200 GeV, top quarks require a higher momentum threshold.
+> {: .solution}
+{: .challenge}
 
 ## Jet substructure
 
@@ -94,6 +123,24 @@ if(nSDSubJets > 0){
 ~~~
 {: .language-cpp}
 
+> ## Exercise: mass and N-subjettiness correlations
+> Study the correlation between groomed jet mass and N-subjettiness ratios.
+> Make 2D plots of either pruned jet mass versus tau_2/tau_1, or softdrop jet mass versus tau_3/tau_2.
+> Where do the various parent particles of the jets pool?
+> What requirements would effectively select W bosons or top quarks?
+> Tip: use the same type of ROOT Draw command as in the previous exercise.
+>
+>> ## Solution
+>> The structure in the tau_2/tau_1 plot is very unique: W bosons pool at lower values of tau_2/tau_1, while top quarks
+>> (with more than 2 subjets) and light quarks (with only 1 subjet) pool at medium and higher values.
+>> In the tau_3/tau_2 plot, top quark jets have low values while both W boson and light quark jets are gathered near 1.
+>> The correlations in these plots lead directly to the "tagging" criteria introduced in the next section.
+>> ![](../assets/img/Wsubjettiness.PNG)
+>> ![](../assets/img/Tsubjettiness.PNG)
+>{: .solution}
+{: .challenge}
+
+
 ## W and top tagging
 
 The CMS jet algorithms group studied the efficiency of identifying known W boson jets using almost 30 different combinations of groomed mass and jet substructure variables. The optimal combination for 2015 data was pruned mass + tau_2/tau_1 for large-radius jets using the CHS pileup mitigation technique. For "PUPPI" jets, developed for Run 2, the softdrop mass is used instead. The use of PUPPI jets became the default for CMS analyses beginning only in 2016, so currently this option is not implemented in the POET.
@@ -117,25 +164,6 @@ For top quarks, the soft drop mass is used regardless of pileup mitigation techn
 > ![](../assets/img/Tselections.PNG)
 {: .objective}
 
-> ## Exercise: boosted particle momentum ranges
-> Study the connection between jet mass and jet momentum -- what minimum transverse momentum is
-> required for W boson and top quark jets to be found within a large-radius jet?
->
-> Begin by opening the `myoutput.root` file you processed at the beginning of this segment.
-> Use ROOT's capability to draw two-dimensional histograms to compare various jet masses against
-> the jet's transverse momentum:
->~~~
->$ root -l myoutput.root
->[1] _file0->cd("myfatjets");
->[2] Events->Draw("fatjet_pt:fatjet_<SOME MASS VARIABLE>","","colz"); // colz makes a heatmap
->~~~
->{: .language-cpp}
->
->>## Solution
->>Make a plot! Should hopefully see that pt should be > 200 for W (mass of 80 GeV) and > 500 for top (mass of 170 GeV).
->{: .solution}
-{: .challenge}
-
 > ## Exercise: explore jet tagging criteria
 > Study the connection between groomed mass, n-subjettiness ratios, and subjet b-tagging.
 > From the top quark events in `myoutput.root`, can you see either a W boson or top quark mass
@@ -147,7 +175,6 @@ For top quarks, the soft drop mass is used regardless of pileup mitigation techn
 > will place a new histogram on top of any existing histograms.
 >
 > Criteria you could test include:
-> * `fatjet_corrpt > 200`
 > * `fatjet_tau2/fatjet_tau1 < 0.6`
 > * `fatjet_tau2/fatjet_tau1 < 0.45`
 > * `fatjet_corrpt > 500`
@@ -156,7 +183,10 @@ For top quarks, the soft drop mass is used regardless of pileup mitigation techn
 > * `fatjet_subjet1btag > .046`
 >
 >> ## Solution
->> To-do!
+>> Both the W boson jets and the top quark jets can be isolated from the other jet types quite
+>> effectively with the N-subjettiness criteria!
+>> ![](../assets/img/Pruning.PNG)
+>> ![](../assets/img/SoftdropPeaks.PNG)
 >{: .solution}
 {: .challenge}
 

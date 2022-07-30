@@ -16,13 +16,21 @@ keypoints:
 ---
 
 > ## Run POET
->Take some time to run POET using the entire top quark pair test file. In `python/poet_cfg.py` set the
->number of events to process to -1:
->~~~
->#---- Select the maximum number of events to process (if -1, run over all events)
->process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
->~~~
->{: .language-python}
+> Take some time to run POET using an entire high-mass top quark pair test file. In `python/poet_cfg.py` set the
+> number of events to process to -1 and change the input simulation file:
+> ~~~
+> #---- Select the maximum number of events to process (if -1, run over all events)
+> process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+> ~~~
+> {: .language-python}
+> ~~~
+> #---- Define the test source files to be read using the xrootd protocol (root://), or local files (file:)
+> process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
+>         'root://eospublic.cern.ch//eos/opendata/cms/mc/RunIIFall15MiniAODv2/TT_Mtt-1000toInf_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-> v1/80000/000D040B-4ED6-E511-91B6-002481CFC92C.root',
+>         )
+> )
+> ~~~
+> {: .language-python}
 >
 >And run POET using `cmsRun python/poet_cfg.py`.
 {: .prereq}
