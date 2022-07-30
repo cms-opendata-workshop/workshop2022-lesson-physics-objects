@@ -16,6 +16,15 @@ keypoints:
 ---
 
 > ## Run POET
+> For this episode, checkout the main branch of POET.  Go to your `CMSSW_7_6_7/src/PhysObjectExtractorTool/PhysObjectExtractor` area, `git stash` everything if you have lingering modifications, and then do:
+>
+> ~~~
+> git checkout 2015MiniAOD
+> ~~~
+> {: .language-bash}
+>
+> This will get you the latest version of the POET repository for Run 2 data. 
+>
 > Take some time to run POET using an entire high-mass top quark pair test file. In `python/poet_cfg.py` set the
 > number of events to process to -1 and change the input simulation file:
 > ~~~
