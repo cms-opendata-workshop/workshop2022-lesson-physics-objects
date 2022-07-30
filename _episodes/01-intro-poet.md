@@ -1,7 +1,7 @@
 ---
 title: "General Physics Objects and POET"
-teaching: 30
-exercises: 30
+teaching: 20
+exercises: 40
 questions:
 - What do we call physics objects in CMS?
 - How are physics objects reconstructed?
@@ -39,7 +39,7 @@ Physics objects could be
 
 For the current releases of open data, we store them in ROOT files following the EDM data model in the so-called **miniAOD** format.  One needs the **CMSSW** software to read and extract information (of the physics objects) from these files.
 
-In the [CERN Open Portal](http://opendata.cern.ch)(CODP) site one can find a more detailed description of these physical objects and a list of them corresponding to [2010](http://opendata.cern.ch/docs/cms-physics-objects-2010), [2011/2012](http://opendata.cern.ch/docs/cms-physics-objects-2011) from Run 1, and [2015](http://opendata.cern.ch/docs/cms-physics-objects-2015) (Run 2) releases of open data.
+In the [CERN Open Portal](http://opendata.cern.ch) (CODP) site one can find a more detailed description of these physical objects and a list of them corresponding to [2010](http://opendata.cern.ch/docs/cms-physics-objects-2010), [2011/2012](http://opendata.cern.ch/docs/cms-physics-objects-2011) from Run 1, and [2015](http://opendata.cern.ch/docs/cms-physics-objects-2015) (Run 2) releases of open data.
 
 In this workshop we will focus on working with open data from the **latest 2015 release** from Run 2.  However, you will get a taste of using Run 1 data as well, tomorrow.
 
@@ -313,7 +313,7 @@ vector<reco::VertexCompositePtrCandidate>    "slimmedSecondaryVertices"   ""    
 {: .output}
 
 
-This is essentiall all the information you can get from MINIAOD files like this one. Put special attention to the anything related to *Electron(s)* or *Muon(s)*.  One thing you notice is that the acronym **PAT** is repeated several times.  PAT stands for Physics Analysis Tool and is a framework within CMSSW that is extensively used to refine the selection of physical objects in CMS.  The **RECO** variables are, however, lower level variables.  There are also some objects that will give you additional information, like the **HLT** *TriggerResults*, which we will cover tomorrow.
+This is essentially all the information you can get from MINIAOD files like this one. Put special attention to the anything related to *Electron(s)* or *Muon(s)*.  One thing you notice is that the acronym **PAT** is repeated several times.  PAT stands for Physics Analysis Tool and is a framework within CMSSW that is extensively used to refine the selection of physical objects in CMS.  The **RECO** variables are, however, lower level variables.  There are also some objects that will give you additional information, like the **HLT** *TriggerResults*, which we will cover tomorrow.
 
 
 Next in the `poet_cfg.py` file, you will find a couple of modules that are evidently associated to EDAnalyzers that deal with electrons and muons:
@@ -359,11 +359,11 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string("myoutput
 > {: .solution}
 {: .challenge}
 
-That is the way in which we can add different objects to our output file.  We will look that the C++ code of some of these objects and think a little bit about the physics involed.  We will defer that for the next episode, however.
+That is the way in which we can add different objects to our output file.  We will look at the C++ code of some of these objects and think a little bit about the physics involed.  We will defer that for the next episodes in this lesson, however.
 
 ### Adding data quality
 
-The detector is not perfect and sometimes there is a high voltage source that peaks or surges, for instance, and with it many channels of a given subdetector.  When that happens, the DOC (Detector on-call expert) for that subsystem is called, the run is generally stopped and the problem is fixed.  However, a few lumi sections (LS), containing several events, may need to be discarted (you don't want something that can fake an exotic particle due to a sensor spiking).  
+The detector is not perfect and sometimes there is a high voltage source that peaks or surges, for instance, and with it many channels of a given subdetector.  When that -- or any other problem -- happens, the DOC (Detector on-call expert) for that subsystem is called, the run is generally stopped and the problem is fixed.  However, a few lumi sections (LS), containing some events, may need to be discarted (you don't want something that can fake an exotic particle due to a sensor spiking, for example).  
 
 There is a tremendous effort by many people in the collaboration to assure the quality of our data.  We do this by keeping record of only the good LS in a json file.  For convinience, we have put this file in the `data` directory of the POET repository. More information can be found [here](https://opendata.cern.ch/record/14210).
 
@@ -425,9 +425,39 @@ You can see in the `src` directory that there is already code for many other obj
 > {: .solution} 
 {: .challenge}
 
-### Final config file
 
-At this point, your configuration file should look something like
+
+### Common treatment of physics objects
+
+If you look briefly at the different EDAnalyzers in the `src` directory you will notice they share the code structure.  One could build a specific analyzer in order to access the information from a particular type.  A summary of the *high level physics objects* can be found in this [Twiki page](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#High_level_physics_objects) from CMS.  
+
+
+## Standard kinematic variables
+
+Many of the most important kinematic quantities defining a physics object are accessed in a common way across all the objects. 
+All objects have associated nergy-momentum vectors, typically constructed using **transverse momentum, pseudorapdity, azimuthal angle, and mass or energy**.
+
+In the `src/ElectronAnalyzer.cc`, for instance, the electron four-vector elements are accessed as shown below. The values for each electron 
+are stored into an array, which will become a branch in a `ROOT` *TTree*.  Open this file and take a look:
+
+~~~
+for (const pat::Electron &el : *electrons)
+    {
+      electron_e.push_back(el.energy());
+      electron_pt.push_back(el.pt());
+      electron_px.push_back(el.px());
+      electron_py.push_back(el.py());
+      electron_pz.push_back(el.pz());
+      electron_eta.push_back(el.eta());
+      electron_phi.push_back(el.phi());
+      ....
+~~~
+{: .language-cpp}
+
+
+### Final config file from this episode
+
+At the end of this episode, your configuration file should look something like the one below.  We will pick up from here in the next episode.
 
 > > ## View final file
 > >
@@ -516,8 +546,6 @@ At this point, your configuration file should look something like
 > > {: .language-python}
 > {: .solution}
 {: .challenge}
-
-
 
 {% include links.md %}
 
