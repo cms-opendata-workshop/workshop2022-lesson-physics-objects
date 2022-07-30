@@ -138,7 +138,7 @@ the other objects in the event or be *isolated*. For instance, an isolated muon 
 In contrast, a non-isolated muon can come from a weak decay inside a jet.
 
 Muon isolation is calculated from a combination of factors: energy from charged hadrons, energy from
-neutral hadrons, and energy from photons, all in a cone of radius $$ R = \sqrt{(\eta)^2 + (\phi)^2} < 0.3$$ or $$<0.4$$ around
+neutral hadrons, and energy from photons, all in a cone of radius $$ R = \sqrt{\eta^2 + \phi^2} < 0.3$$ or $$<0.4$$ around
 the muon. Many algorithms also feature a *correction factor* that subtracts average energy expected
 from pileup contributions to this cone -- we'll explore this later as an exercise. Decisions are made by comparing this energy sum to the
 transverse momentum of the muon.
@@ -165,7 +165,7 @@ For muons, we will also need the `sip3d` variable we included already for the el
 
 Now, there is another variable that was used for our target analysis but doesn't exist in your `src/MuonAnalyzer.cc`.  
 
-Muon isolation is based on the sum of the p T of the charged and neutral hadrons as well as photons 
+Muon isolation is based on the sum of the $$p_{T}$$ of the charged and neutral hadrons as well as photons 
 reconstructed in a cone R=0.4 around the muon momentum. The sum of the $$p_{T}$$ of the charged hadrons associated to vertices other
 than the primary vertex, is used to correct for pileup contamination in the total flux of neutrals found in the muon isolation cone. 
 A factor of $$\beta = 0.5$$ is used to scale this contribution as: 
@@ -175,14 +175,14 @@ I_{\mu} = \frac{1}{p_{T}}\cdot \displaystyle\Sigma_{R<0.4}\left[p_{T}^{ch}+{\rm 
 $$
 
 
-> ## Add the pfreliso04DBCorr variable
+> ## Add the `pfreliso04DBCorr` variable
 >
 > As you may notice, the so-called $$\beta$$ factor in the expression above was never included in our `MuonAnalyzer.cc`.  Your task consists of computing and adding this new relative isolation variable (we will call it `pfreliso04DBCorr`) to our analyzer.  Resist the urgency to look at the solution (it is truly very simple.)
 >
 > These are some hints:
 > * We already have most of that variable implemented under other (very similar) reliso variable.
 > * Similar to, for instance, the method `.sumPhotonEt` of the `iso04` object, there must be another method which relates to the so-called pile-up contamination that we need.  You might need to do some detective work in order to find it.
-> * The *max* function there can be thought of just the C++ `std::max` function.
+> * The *max* function in the expression above can be thought of just the C++ `std::max` function.
 >
 > > ## Solution
 > >
