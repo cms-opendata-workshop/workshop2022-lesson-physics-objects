@@ -26,11 +26,13 @@ In POET we will study the `ElecronAnalyzer.cc`
 The first thing that you will see is a set of includes. In particular we have a set of headers for electrons:
 
 ~~~
+...
 //class to extract electron information
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+...
 ~~~
 {: .language-cpp}
 
@@ -97,7 +99,7 @@ value efficiency over background rejection, and some analyses are the opposite.
 The "standard" identification and isolation algorithm results can be accessed from the physics
 object classes.
 
-## Multivariate Electron Identification
+## Multivariate Electron Identification (MVA)
 
 In the MVA approach, one forms a single discriminator variable that is computed based on multiple parameters of the electron object and provides the best separation between the signal and backgrounds. One can then cut on discriminator value or use the distribution of the values for a shape based statistical analysis.
 
@@ -106,7 +108,7 @@ There are two basic types of MVAs that are usually provided by EGM:
  * **the triggering MVA**: the discriminator is trained on the electrons that pass typical electron trigger requirements
  * **the non-triggering MVA**: the discriminator is trained on all electrons regardless of the trigger
  
-For our purposes, we will use the non-triggering MVA. Note the tags that are used `...wp90` and `...wp80`. As mentioned above, the difference lies on the working point (`wp`).
+For our purposes, we will use the non-triggering MVA. Note the tags that are used `...wp90` and `...wp80`. As mentioned above, the difference lies on the working point (`wp`). Both 80% and 90% are the signal efficiency for each MVA category as measured on electron.
 ~~~
       electron_ismvaLoose.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp90"));
       electron_ismvaTight.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp80"));
@@ -125,10 +127,12 @@ Most `pat::<object>` classes contain member functions that return detector-relat
 case of electrons, we see this information used as identification criteria:
 
 ~~~
+...
       electron_veto.push_back(el.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-veto"));//
       electron_isLoose.push_back(el.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"));
       electron_isMedium.push_back(el.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-medium"));
       electron_isTight.push_back(el.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-tight"));
+...
 ~~~
 {: .language-cpp}
 
@@ -156,19 +160,19 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >## Hands-on: Adding ip3d for electrons (impact parameter in 3D)
 >
 > Using the documentation on this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) and the `ElectronAnalyzer.cc`:
-> * First, you can see the structure in each header (e.g. `DataFormats/PatCandidates/interface/Electron.h`). Then, in this repository you will see the slightly different path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder in the repository. You will need this to check out the methods that you should implement for ip3d.
+> * First, note the structure in each header (e.g. `DataFormats/PatCandidates/interface/Electron.h`). Then, in this [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h) you will see the slightly different path **cmssw/DataFormats/PatCandidates/interface/Electron.h** in which each name corresponds to a folder in the repository. You will need this to check out the methods that you should implement for ip3d.
 > * You can check out all the headers and see the available methods for each of them. For example, **Electron.h** has the `gsfTrack()` method.
 >
-> Now, the first step is to add a `std::vector` for ip3d variable. Here is an example:
+> Now, the first step is to add a `std::vector` for the ip3d variable. Here is an example:
 >~~~
 > std::vector<int> electron_ismvaTight;
 >~~~
 >{: .language-cpp}
 > This variable must be `<double>`
 >
-> You will need to add the mtree variable in the constructor. What do you think these lines of code are doing?
+> Also, you will need to add the `mtree` variable in the constructor. What do you think this line of code is doing?
 >
-> Next, in the `ElectronAnalyzer::analyze`. You will need to ad the `clear()` method for the std vetor variable that you have just created.
+> Next, in the `ElectronAnalyzer::analyze`. You will need to add the `clear()` method for the `std::vector` variable that you have just created.
 >
 > Here comes the challenge!!
 >
@@ -180,6 +184,7 @@ electron_iso.push_back(el.ecalPFClusterIso());
 > #include "TrackingTools/IPTools/interface/IPTools.h"
 >~~~
 >{: .language-cpp}
+> Using the [repository](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/DataFormats/PatCandidates/interface/Electron.h), find out the appropriate methods that must be added.
 > Also, you can check this [code](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L576).
 >
 >> ## Solution:
@@ -199,9 +204,9 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >> mtree->GetBranch("electron_sip3d")->SetTitle("electron significance on impact parameter in 3d");
 >>~~~
 >>{: .language-cpp}
->> Note that mtree stores the information in each variable. FIX ME
+>> Note that mtree stores the information in each variable.
 >>
->> vector clearing:
+>> Vector clearing:
 >>~~~
 >> electron_ip3d.clear();
 >> electron_sip3d.clear();
@@ -209,12 +214,18 @@ electron_iso.push_back(el.ecalPFClusterIso());
 >>{: .language-cpp}
 >> and finally: 
 >>~~~
+>> ...
+>> electron_ismvaTight.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp80"));
+>> 
 >> edm::ESHandle<TransientTrackBuilder> trackBuilder;
 >> iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
 >> reco::TransientTrack tt = trackBuilder->build(el.gsfTrack());
 >> std::pair<bool,Measurement1D> ip3dpv = IPTools::absoluteImpactParameter3D(tt, primaryVertex);
 >> electron_ip3d.push_back(ip3dpv.second.value());
 >> electron_sip3d.push_back(ip3dpv.second.significance());
+>>
+>> numelectron++;
+>> ...
 >>~~~
 >>{: .language-cpp}
 >{: .solution}
