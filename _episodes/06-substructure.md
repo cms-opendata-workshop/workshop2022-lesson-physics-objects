@@ -1,5 +1,5 @@
 ---
-title: "CMS Jets and MET"
+title: "Jet substructure"
 teaching: 10
 exercises: 25
 questions:
@@ -10,10 +10,12 @@ objectives:
 - "Understand the groomed mass and jet substructure variables typically used in CMS analyses"
 - "Study W boson and top quark identification"
 keypoints:
-- ""
+- "Grooming algorithms remove soft and wide angle radiation to bring a jet's mass closer to that of the parent particle."
+- "Substructure algorithms provide information about the number of high-momentum subjets or whether heavy flavor hadrons existed inside the jet."
+- "The standard variables needed to tag W, Z, H boson or top quark jets in 2015 data are included in the POET."
 ---
 
-> ## Run POET
+> ## Run POET (...maybe...)
 > If you have not already, run POET using the entire top quark pair test file. In `python/poet_cfg.py` set the
 > number of events to process to -1:
 > ~~~
@@ -152,7 +154,7 @@ Selection criteria for W boson and top quark jets in 2015 data analyses are desc
 > The supported working points and their correction factors are shown in this table:
 > <img src="Wselections.PNG" alt="" />
 > ![](../assets/img/Wselections.PNG)
-{: .objective}
+{: .callout}
 
 For top quarks, the soft drop mass is used regardless of pileup mitigation technique for the jets. In this case, tau_3/tau_2 becomes the most useful substructure variable, followed by b quark tagging applied on the individual subjets of the large-radius jet.
 
@@ -162,7 +164,7 @@ For top quarks, the soft drop mass is used regardless of pileup mitigation techn
 > efficiencies, and correction factors are shown in this table:
 > <img src="Tselections.PNG" alt="" />
 > ![](../assets/img/Tselections.PNG)
-{: .objective}
+{: .callout}
 
 > ## Exercise: explore jet tagging criteria
 > Study the connection between groomed mass, n-subjettiness ratios, and subjet b-tagging.
