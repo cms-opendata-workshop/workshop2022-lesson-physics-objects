@@ -35,7 +35,7 @@ keypoints:
 > ~~~
 > #---- Define the test source files to be read using the xrootd protocol (root://), or local files (file:)
 > process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
->         'root://eospublic.cern.ch//eos/opendata/cms/mc/RunIIFall15MiniAODv2/TT_Mtt-1000toInf_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-> v1/80000/000D040B-4ED6-E511-91B6-002481CFC92C.root',
+>         'root://eospublic.cern.ch//eos/opendata/cms/mc/RunIIFall15MiniAODv2/TT_Mtt-1000toInf_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/80000/000D040B-4ED6-E511-91B6-002481CFC92C.root',
 >         )
 > )
 > ~~~
