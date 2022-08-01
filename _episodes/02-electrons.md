@@ -290,8 +290,8 @@ electron_iso.push_back(el.ecalPFClusterIso());
 > > Here are the files with the implemented solution.  We will pick up from here at the start of the *Muons* episode after the break.
 > >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/poet_cfg.py_4)
 > > file and save it as `python/poet_cfg.py`
-> >* Download [this](https://github.com/cms-opendata-analyses/PhysObjectExtractorTool/blob/odws2022-poetlesson/PhysObjectExtractor/trunk/ElectronAnalyzer.cc_1) file and save it as `src/ElectronAnalyzer.cc`
-> >* Download [this](https://github.com/cms-opendata-analyses/PhysObjectExtractorTool/blob/odws2022-poetlesson/PhysObjectExtractor/trunk/BuildFile.xml_1) file and save it as `BuildFile.xml`
+> >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/ElectronAnalyzer.cc_1) file and save it as `src/ElectronAnalyzer.cc`
+> >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/BuildFile.xml_1) file and save it as `BuildFile.xml`
 > >
 > {: .solution}
 {: .challenge}

@@ -22,10 +22,10 @@ keypoints:
 >
 > * We will be still running on the `CMSSW` Docker container.  If you closed it for some reason, just fire it back up.
 > * During the last episode we made modifications to a few files.  If you fell behind, worry not, you can get the modifications with the files below:
->    * Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/poet_cfg.py_4)
-> file and save it as `python/poet_cfg.py`
->    * Download [this](https://github.com/cms-opendata-analyses/PhysObjectExtractorTool/blob/odws2022-poetlesson/PhysObjectExtractor/trunk/ElectronAnalyzer.cc_1) file and save it as `src/ElectronAnalyzer.cc`
->    * Download [this](https://github.com/cms-opendata-analyses/PhysObjectExtractorTool/blob/odws2022-poetlesson/PhysObjectExtractor/trunk/BuildFile.xml_1) file and save it as `BuildFile.xml`
+>   * Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/poet_cfg.py_4)
+>   file and save it as `python/poet_cfg.py`
+>   * Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/ElectronAnalyzer.cc_1) file and save it as `src/ElectronAnalyzer.cc`
+>   * Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/BuildFile.xml_1) file and save it as `BuildFile.xml`
 >
 {: .prereq}
 
@@ -186,7 +186,7 @@ $$
 >
 > > ## Solution
 > >
-> > You can download [this](https://github.com/cms-opendata-analyses/PhysObjectExtractorTool/blob/odws2022-poetlesson/PhysObjectExtractor/trunk/MuonAnalyzer.cc_2) file and save it as `src/MuonAnalyzer.cc`.  Do not forget to recompile and run.
+> > You can download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/MuonAnalyzer.cc_2) file and save it as `src/MuonAnalyzer.cc`.  Do not forget to recompile and run.
 > {: .solution}
 {: .challenge}
 
