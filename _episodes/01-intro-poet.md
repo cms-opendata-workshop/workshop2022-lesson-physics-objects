@@ -345,8 +345,8 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string("myoutput
 >
 > Compile the code with `scram b` and then run POET twice with the `True` argument:
 > 
-> * First with `cmsRun python/poet_cfg.py True` and then with just
-> * `cmsRun python/poet_cfg.py True`
+> * First with `cmsRun python/poet_cfg.py True` 
+> * and then with just `cmsRun python/poet_cfg.py` (without the *True* boolean, so we run over MC simulations)
 >
 > Open the `myoutput.root` file that gets produced and have a quick look with the `TBrowser`.  
 >
