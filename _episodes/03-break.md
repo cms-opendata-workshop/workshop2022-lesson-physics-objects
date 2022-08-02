@@ -11,6 +11,7 @@ keypoints:
 
 ---
 
+![](https://thedarkestroast.com/wp-content/uploads/2019/11/7213ea7343e55425b60a75c1159098d3.jpg){:width="30%"}
 
 {% include links.md %}
 

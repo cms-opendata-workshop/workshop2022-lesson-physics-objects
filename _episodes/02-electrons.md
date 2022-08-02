@@ -1,7 +1,7 @@
 ---
 title: "Electrons"
-teaching: 15
-exercises: 25
+teaching: 10
+exercises: 30
 questions:
 - "What are electromagnetic objects"
 - "How are electrons treated in CMS?"
@@ -22,7 +22,7 @@ keypoints:
 
 > ## Prerequisites
 >
-> * We will be still running on the python Docker container.  If you closed it for some reason, just fire it back up.
+> * We will be still running on the `CMSSW` Docker container.  If you closed it for some reason, just fire it back up.
 > * During the last episode we made modifications to our `python/poet_cfg.py` file.  If for some reason yours got into an invalid state, just copy/paste from the last episode.
 >
 {: .prereq}
@@ -50,7 +50,7 @@ We measure momentum and energy but also other properties of these objects that h
 
 ## The `ElectronAnalyzer.cc` EDAnalyzer
 
-Fire up your favorit editor on your local machine and open the `src/ElectronAnalyzer.cc` file from the `PhysObjectExtractorTool/PhysObjectExtractor` package of your curent POET repository.  
+Fire up your favorite editor on your local machine and open the `src/ElectronAnalyzer.cc` file from the `PhysObjectExtractorTool/PhysObjectExtractor` package of your curent POET repository.  
 
 
 ### Needed libraries
@@ -191,16 +191,16 @@ electron_iso.push_back(el.ecalPFClusterIso());
 
 >## Adding the sip3d variable for electrons
 >
-> If you happened to read the [article](https://link.springer.com/content/pdf/10.1007/JHEP09(2017)051.pdf) mentioned above, 
+> If you read the [article](https://link.springer.com/content/pdf/10.1007/JHEP09(2017)051.pdf) mentioned above, 
 > which we would like to partially reproduce, you
-> will encounter the usage of a variable which is described as:
+> would encounter the usage of a variable which is described as:
 >
 > > 
-> > Nonprompt leptons that come from the decays of long-lived hadrons are rejected by requiring that the significance
+> > *Nonprompt leptons that come from the decays of long-lived hadrons are rejected by requiring that the significance
 > > of the three-dimensional (3D) impact parameter of
 > > the lepton track, relative to the primary event vertex, is less than four standard deviations.
 > > This requirement effectively reduces the contamination from multijet events, while keeping
-> > a high efficiency for the signal
+> > a high efficiency for the signal*
 > > 
 > {: .testimonial}
 >
@@ -213,13 +213,13 @@ electron_iso.push_back(el.ecalPFClusterIso());
 > 
 > A few hints:
 > 
-> * There is an anlternative way of accesing this `ip3d` variable, as you can see [here](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L586).  We would be, essentially, recomputing this variable
+> * There is an alternative way of accesing this `ip3d` variable, as you can see [here](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L586).  We would be, essentially, recomputing this variable
 > out of [transient tracks](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideTransientTracks).  We can build transient tracks from our electron's track, which is easily accessible as you could note [here](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L576).
 > * What the code snippet above tells us is that the *significance* should come from an C++ object created by the [IPTools](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/PhysicsTools/PatAlgos/plugins/PATElectronProducer.cc#L29) class. 
 > * Exploring that class you will find the [appropriate C++ object](https://github.com/cms-sw/cmssw/blob/fb9777b1d76e3896aff70a926799eb3ed514f168/TrackingTools/IPTools/interface/IPTools.h#L25) and how to retrieve it.
 > * The C++ object name will naturally point you to the class to look at in the header of the *IPTools* class.  Once you find it, you will be able to identify the [needed method](https://github.com/cms-sw/cmssw/blob/166c583788b2da7130695c35d164184c786546b1/DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h#L29) for extracting the significance.
 > * You just need to digest all this information and implement it in the `ElectronAnalyzer.cc`. 
-> * Do not forget to add the TransientTrack and IPTools libraries in the `Buildfile` of the package and recompile your code.
+> * Do not forget to add the TransientTrack and IPTools libraries to the `BuildFile.xml` of the package and recompile your code.
 > * Important note: transient tracks are built with information from the conditions database of the experiment and info about the magnetic field and geometry.  Therefore, to make your life a bit easier, we plainly ask you to include these lines in your `poet_cfg.py` file so you can have access to this information.  No more changes are needed in the config file. 
 > 
 > ~~~
@@ -239,48 +239,61 @@ electron_iso.push_back(el.ecalPFClusterIso());
 > else: process.GlobalTag.globaltag = "76X_mcRun2_asymptotic_RunIIFall15DR76_v1"
 > ~~~
 > {: .language-python}
->> ## Solution:
->> We will add two variables. Let's see:
->>
->> The required std vector variables are the following:
->>~~~
->> std::vector<double> electron_ip3d;	
->> std::vector<double> electron_sip3d;
->>~~~
->>{: .language-cpp}
->> The mtree variables could look like these:
->>~~~
->> mtree->Branch("electron_ip3d",&electron_ip3d);
->> mtree->GetBranch("electron_ip3d")->SetTitle("electron impact parameter in 3d");
->> mtree->Branch("electron_sip3d",&electron_sip3d);
->> mtree->GetBranch("electron_sip3d")->SetTitle("electron significance on impact parameter in 3d");
->>~~~
->>{: .language-cpp}
->> Note that mtree stores the information in each variable.
->>
->> Vector clearing:
->>~~~
->> electron_ip3d.clear();
->> electron_sip3d.clear();
->>~~~
->>{: .language-cpp}
->> and finally almost at the bottom of the electron loop: 
->>~~~
->> ...
->> electron_ismvaTight.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp80"));
->> 
->> edm::ESHandle<TransientTrackBuilder> trackBuilder;
->> iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
->> reco::TransientTrack tt = trackBuilder->build(el.gsfTrack());
->> std::pair<bool,Measurement1D> ip3dpv = IPTools::absoluteImpactParameter3D(tt, primaryVertex);
->> electron_ip3d.push_back(ip3dpv.second.value());
->> electron_sip3d.push_back(ip3dpv.second.significance());
->>
->> numelectron++;
->> ...
->>~~~
->>{: .language-cpp}
->{: .solution}
+> 
+> > ## Solution:
+> >
+> > We will add two variables. Let's see:
+> >
+> > The required std vector variables are the following:
+> > ~~~
+> > std::vector<double> electron_ip3d;	
+> > std::vector<double> electron_sip3d;
+> > ~~~
+> > {: .language-cpp}
+> > 
+> > The mtree variables could look like these:
+> > ~~~
+> > mtree->Branch("electron_ip3d",&electron_ip3d);
+> > mtree->GetBranch("electron_ip3d")->SetTitle("electron impact parameter in 3d");
+> > mtree->Branch("electron_sip3d",&electron_sip3d);
+> > mtree->GetBranch("electron_sip3d")->SetTitle("electron significance on impact parameter in 3d");
+> > ~~~
+> > {: .language-cpp}
+> >
+> > Note that mtree stores the information in each variable.
+> >
+> > Vector clearing:
+> > ~~~
+> > electron_ip3d.clear();
+> > electron_sip3d.clear();
+> > ~~~
+> > {: .language-cpp}
+> > 
+> > and finally almost at the bottom of the electron loop: 
+> > 
+> > ~~~
+> > ...
+> > electron_ismvaTight.push_back(el.electronID("mvaEleID-Spring15-25ns-nonTrig-V1-wp80"));
+> > 
+> > edm::ESHandle<TransientTrackBuilder> trackBuilder;
+> > iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
+> > reco::TransientTrack tt = trackBuilder->build(el.gsfTrack());
+> > std::pair<bool,Measurement1D> ip3dpv = IPTools::absoluteImpactParameter3D(tt, primaryVertex);
+> > electron_ip3d.push_back(ip3dpv.second.value());
+> > electron_sip3d.push_back(ip3dpv.second.significance());
+> >
+> > numelectron++;
+> > ...
+> > ~~~
+> > {: .language-cpp}
+> >
+> > Here are the files with the implemented solution.  We will pick up from here at the start of the *Muons* episode after the break.
+> >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/poet_cfg.py_4)
+> > file and save it as `python/poet_cfg.py`
+> >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/ElectronAnalyzer.cc_1) file and save it as `src/ElectronAnalyzer.cc`
+> >* Download [this](https://raw.githubusercontent.com/cms-opendata-analyses/PhysObjectExtractorTool/odws2022-poetlesson/PhysObjectExtractor/trunk/BuildFile.xml_1) file and save it as `BuildFile.xml`
+> >
+> {: .solution}
 {: .challenge}
 
 

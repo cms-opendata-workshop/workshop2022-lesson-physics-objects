@@ -345,8 +345,8 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string("myoutput
 >
 > Compile the code with `scram b` and then run POET twice with the `True` argument:
 > 
-> * First with `cmsRun python/poet_cfg.py True` and then with just
-> * `cmsRun python/poet_cfg.py True`
+> * First with `cmsRun python/poet_cfg.py True` 
+> * and then with just `cmsRun python/poet_cfg.py` (without the *True* boolean, so we run over MC simulations)
 >
 > Open the `myoutput.root` file that gets produced and have a quick look with the `TBrowser`.  
 >
@@ -361,7 +361,7 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string("myoutput
 
 That is the way in which we can add different objects to our output file.  We will look at the C++ code of some of these objects and think a little bit about the physics involed.  We will defer that for the next episodes in this lesson, however.
 
-### Adding data quality
+### Adding data quality to the configuration
 
 The detector is not perfect and sometimes there is a high voltage source that peaks or surges, for instance, and with it many channels of a given subdetector.  When that -- or any other problem -- happens, the DOC (Detector on-call expert) for that subsystem is called, the run is generally stopped and the problem is fixed.  However, a few lumi sections (LS), containing some events, may need to be discarted (you don't want something that can fake an exotic particle due to a sensor spiking, for example).  
 
@@ -385,7 +385,7 @@ There is a tremendous effort by many people in the collaboration to assure the q
 {: .challenge}
 
 
-### Add a new physics object 
+### Add a new physics object to the configuration
 
 You can see in the `src` directory that there is already code for many other objects, not just electrons or muons.  Some of these EDAnalyzers are complete while others are still being developed.
 
@@ -427,21 +427,83 @@ You can see in the `src` directory that there is already code for many other obj
 
 
 
-### Common treatment of physics objects
+## Common treatment of physics objects
 
 If you look briefly at the different EDAnalyzers in the `src` directory you will notice they share the code structure.  One could build a specific analyzer in order to access the information from a particular type.  A summary of the *high level physics objects* can be found in this [Twiki page](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#High_level_physics_objects) from CMS.  
 
 
-## Standard kinematic variables
+### POET structure of EDAnalyzers
 
-Many of the most important kinematic quantities defining a physics object are accessed in a common way across all the objects. 
-All objects have associated nergy-momentum vectors, typically constructed using **transverse momentum, pseudorapdity, azimuthal angle, and mass or energy**.
+During your prep-work, you already saw the main structure of an EDAnalyzer.  We have added certain functionalities, which we briefly present here using the `src/ElectronAnalyzer.cc` as an example.
 
-In the `src/ElectronAnalyzer.cc`, for instance, the electron four-vector elements are accessed as shown below. The values for each electron 
-are stored into an array, which will become a branch in a `ROOT` *TTree*.  Open this file and take a look:
+The first thing to to notice is that all the EDAnalyzers in POET book a `ROOT` *TTree* and some variables in the class definition to store the physics objects information:
 
 ~~~
-for (const pat::Electron &el : *electrons)
+      TTree *mtree;
+      int numelectron; //number of electrons in the event
+      std::vector<float> electron_e;
+      std::vector<float> electron_pt;
+      std::vector<float> electron_px;
+      std::vector<float> electron_py;
+      std::vector<float> electron_pz;
+      std::vector<float> electron_eta;
+      std::vector<float> electron_phi;
+~~~
+{: .language-cpp}
+
+In the constructor, a *TFileService* object is used to deal with the final `ROOT` output file and some `ROOT` braches are specified.  Of course, these are the ones which appear in the `myoutput.root` file.
+
+~~~
+   edm::Service<TFileService> fs;
+   mtree = fs->make<TTree>("Events", "Events");
+  
+  mtree->Branch("numberelectron",&numelectron);   
+  mtree->GetBranch("numberelectron")->SetTitle("number of electrons");
+  mtree->Branch("electron_e",&electron_e);
+  mtree->GetBranch("electron_e")->SetTitle("electron energy");
+  mtree->Branch("electron_pt",&electron_pt);
+  mtree->GetBranch("electron_pt")->SetTitle("electron transverse momentum");
+  mtree->Branch("electron_px",&electron_px);
+  mtree->GetBranch("electron_px")->SetTitle("electron momentum x-component");
+  mtree->Branch("electron_py",&electron_py);
+  mtree->GetBranch("electron_py")->SetTitle("electron momentum y-component");
+  mtree->Branch("electron_pz",&electron_pz);
+  mtree->GetBranch("electron_pz")->SetTitle("electron momentum z-component");
+  mtree->Branch("electron_eta",&electron_eta);
+  mtree->GetBranch("electron_eta")->SetTitle("electron pseudorapidity");
+  mtree->Branch("electron_phi",&electron_phi);
+  mtree->GetBranch("electron_phi")->SetTitle("electron polar angle");
+~~~
+{: .language-cpp}
+
+Essentially all of the EDAnalyzers clear the variable containers and loop over the objects present in the event.  
+
+Finally, many of the most important kinematic quantities defining a physics object are accessed in a common way across all the objects. 
+Most objects have associated energy-momentum vectors, typically constructed using **transverse momentum, pseudorapdity, azimuthal angle, and mass or energy**.
+
+~~~
+   numelectron = 0;
+   electron_e.clear();
+   electron_pt.clear();
+   electron_px.clear();
+   electron_py.clear();
+   electron_pz.clear();
+   electron_eta.clear();
+   electron_phi.clear();
+   electron_ch.clear();
+   electron_iso.clear();
+   electron_veto.clear();//
+   electron_isLoose.clear();
+   electron_isMedium.clear();
+   electron_isTight.clear();
+   electron_dxy.clear();
+   electron_dz.clear();
+   electron_dxyError.clear();
+   electron_dzError.clear();
+   electron_ismvaLoose.clear();
+   electron_ismvaTight.clear();
+
+    for (const pat::Electron &el : *electrons)
     {
       electron_e.push_back(el.energy());
       electron_pt.push_back(el.pt());
@@ -450,12 +512,12 @@ for (const pat::Electron &el : *electrons)
       electron_pz.push_back(el.pz());
       electron_eta.push_back(el.eta());
       electron_phi.push_back(el.phi());
-      ....
 ~~~
 {: .language-cpp}
 
 
-### Final config file from this episode
+
+## Final config file from this episode
 
 At the end of this episode, your configuration file should look something like the one below.  We will pick up from here in the next episode.
 
