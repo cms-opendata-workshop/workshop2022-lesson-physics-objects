@@ -92,6 +92,7 @@ The internal structure of a jet can be probed using many observables: [N-subjett
 
 The "tau" variables of N-subjettiness, defined below, are jet shape variables whose value approaches 0 for jets having N or fewer subjets:
 
+![](../assets/img/Nsubjettiness.PNG)
 
 If the value approaches zero it indicates that the consitituents all lie near one of the previously identified subjet axes. For a top quark jet with 3 subjets, we would expect small tau values for N = 3, 4, 5, 6, etc, but larger values for N = 1 or 2.
 
